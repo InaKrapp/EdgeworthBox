@@ -26,11 +26,7 @@ Edgeworth <- function(Q1_h = NULL, E_h = c(10,0), E_f = c(0,10), alpha = 0.5, be
   hues = seq(15, 375, length = length(Q1_h) + 1)
   cols = hcl(h = hues, l = 65, c = 100)[1:length(Q1_h)]
   p <- ggplot(data = data.frame(x = 0), mapping = aes(x = x)) + 
-    geom_point(aes(x = E_h[1], y = E_h[2]), color = 'black') + 
-    geom_vline(xintercept = E1) + geom_hline(yintercept = E2) +
-    annotate('text', x = E_h[1], y = E_h[2]+0.025*E2, label = 'E') + 
-    xlim(0, E1) + ylim(0, E2) + 
-    labs(x = bquote(~Q[1]^h), y = bquote(~Q[2]^h))
+    geom_point(aes(x = E_h[1], y = E_h[2]), color = 'black')
   for(i in 1:length(Q1_h)){
     p <- p + 
       stat_function(fun = function(x,i) (Ustar_h[i]/(x^alpha))^(1/(1-alpha)), 
@@ -63,7 +59,14 @@ Edgeworth <- function(Q1_h = NULL, E_h = c(10,0), E_f = c(0,10), alpha = 0.5, be
       #               args = list(i = i), color = 'black') + 
       geom_point(aes(x = Q1_h_star, y = Q2_h_star), color = 'black', shape = 8) +
       geom_abline(slope = (Q2_h_star-E_h[2])/(Q1_h_star-E_h[1]),
-                  intercept = E_h[2]-E_h[1]*(Q2_h_star-E_h[2])/(Q1_h_star-E_h[1])) 
+                  intercept = E_h[2]-E_h[1]*(Q2_h_star-E_h[2])/(Q1_h_star-E_h[1])) +theme_linedraw()+ theme(aspect.ratio = 1)+
+      geom_rect(aes(xmin = 0, xmax = E_h[1]+E_f[1], ymin = 0, ymax = E_f[2]+E_h[2]), alpha = 0, color = 'black')+ #     labs(title = "Two persons ('Home' and 'Foreign') trade \n two goods: 'Good 1' and 'Good 2'")+
+ scale_y_continuous( bquote(~Q[2]^h), sec.axis = sec_axis(~ rev(.) , name = bquote(~Q[2]^f)), limits=c(0 - 0.057*(E_f[2]+E_h[2]),  E_f[2]+E_h[2]+ 0.057*(E_f[2]+E_h[2]))) +
+      scale_x_continuous(bquote(~Q[1]^h), sec.axis = sec_axis(~ rev(.) , name = bquote(~Q[1]^f)), limits=c(0 - 0.057*(E_f[1]+E_h[1]),  E_f[1]+E_h[1]+ 0.057*(E_f[1]+E_h[1])))+
+      theme(text=element_text(size=20))+
+      annotate(geom = 'label', x = Q1_h_star, y = Q2_h_star+0.025*E2, label = 'Final allocation', size = 4) +
+      annotate(geom = 'label', x = E_h[1], y = E_h[2]+0.025*E2, label = 'Initial allocation', size = 4)
+
       # annotate('text', x = Q1_h_star, y = Q2_h_star+0.025*E2, 
       #           label = Ulabel, parse = TRUE)
                # label = paste('q[h] == (', round(Q1_h_star, 2), ', ', 
